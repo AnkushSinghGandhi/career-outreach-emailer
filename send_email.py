@@ -17,7 +17,7 @@ if os.path.exists("sent_log.csv"):
     sent_emails = set(sent_df["email"].tolist())
 else:
     sent_emails = set()
-    pd.DataFrame(columns=["email"]).to_csv("test_sent_log.csv", index=False)
+    pd.DataFrame(columns=["email"]).to_csv("sent_log.csv", index=False)
 
 pending_df = emails_df[~emails_df["email"].isin(sent_emails)]
 
