@@ -43,8 +43,8 @@ I look forward to hearing from you soon.
 Best regards,
 Ankush Singh Gandhi
 +91-95296-39652
-[https://warriorwhocodes.com](https://warriorwhocodes.com)
-[https://www.linkedin.com/in/ankushsinghgandhi](https://www.linkedin.com/in/ankushsinghgandhi)
+https://warriorwhocodes.com
+https://www.linkedin.com/in/ankushsinghgandhi
 """
 
 ATTACHMENT_PATH = "resume.pdf"
