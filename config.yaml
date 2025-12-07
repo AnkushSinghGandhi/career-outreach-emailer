@@ -24,6 +24,17 @@ files:
   replied: replied.csv
   resume: resume.pdf
 
+test_mode:
+  # Test mode configuration (use test files)
+  enabled: false                # Set to true for default test mode
+  test_contacts: test_emails.csv
+  test_sent_log: test_sent_log.csv
+  test_followup_sent: test_followup_sent.csv
+  test_replied: test_replied.csv
+  limit: 5                      # Lower limit for testing
+  min_delay: 10                 # Shorter delays for testing
+  max_delay: 20
+
 retry:
   # Retry mechanism settings
   enabled: true
