@@ -2,12 +2,11 @@ name: Send Daily Emails
 
 on:
   schedule:
-    - cron: "0 1 * * *"
-    - cron: "30 6 * * *"
+    - cron: "30 3 * * *"
   workflow_dispatch:
 
 permissions:
-  contents: write   # Allow workflow to push changes
+  contents: write
 
 jobs:
   send:
