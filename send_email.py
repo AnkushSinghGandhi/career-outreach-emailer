@@ -21,9 +21,9 @@ else:
 
 pending_df = emails_df[~emails_df["email"].isin(sent_emails)]
 
-LIMIT = 125
-MIN_DELAY = 50
-MAX_DELAY = 120
+LIMIT = 80
+MIN_DELAY = 120
+MAX_DELAY = 900
 
 SUBJECTS = [
     "Application for Python/Backend Developer Role",
