@@ -2,7 +2,8 @@ name: Send Daily Emails
 
 on:
   schedule:
-    - cron: "0 1 * * *"   # 6:30 AM IST (GitHub Actions uses UTC)
+    - cron: "0 1 * * *"
+    - cron: "30 6 * * *"
   workflow_dispatch:
 
 permissions:
