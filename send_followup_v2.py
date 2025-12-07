@@ -4,6 +4,7 @@ import time
 import os
 import random
 import yaml
+import argparse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from tqdm import tqdm
@@ -13,12 +14,32 @@ from backup_manager import BackupManager
 from logger_config import EmailLogger
 from response_detector import ResponseDetector
 
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='Enhanced Follow-up Email Sender with Test Mode')
+parser.add_argument('--test-mode', action='store_true', help='Run in test mode (uses test_emails.csv)')
+parser.add_argument('--dry-run', action='store_true', help='Dry run - show what would be sent without sending')
+args = parser.parse_args()
+
 # Load configuration
 with open("config.yaml", 'r') as f:
     config = yaml.safe_load(f)
 
+# Apply test mode if enabled (CLI arg overrides config)
+TEST_MODE = args.test_mode or config['test_mode']['enabled']
+DRY_RUN = args.dry_run
+
 # Initialize logger
-logger = EmailLogger("send_followup")
+logger = EmailLogger("send_followup" + ("_test" if TEST_MODE else ""))
+
+# Show mode banner
+if TEST_MODE:
+    logger.info("=" * 60)
+    logger.info("🧪 TEST MODE ENABLED - Using test_emails.csv")
+    logger.info("=" * 60)
+elif DRY_RUN:
+    logger.info("=" * 60)
+    logger.info("🔍 DRY RUN MODE - No emails will be sent")
+    logger.info("=" * 60)
 
 # Initialize backup manager
 backup_manager = BackupManager()
@@ -33,13 +54,27 @@ if not EMAIL or not PASSWORD:
 
 # Load configuration values
 email_config = config['email']
-files_config = config['files']
+test_config = config['test_mode']
 retry_config = config['retry']
 progress_config = config['progress']
 
-FOLLOWUP_LIMIT = email_config['followup_limit']
-MIN_DELAY = email_config['followup_min_delay']
-MAX_DELAY = email_config['followup_max_delay']
+# Use test mode settings if enabled
+if TEST_MODE:
+    files_config = {
+        'contacts': test_config['test_contacts'],
+        'sent_log': test_config['test_sent_log'],
+        'followup_sent': test_config['test_followup_sent'],
+        'replied': test_config['test_replied'],
+        'resume': config['files']['resume']
+    }
+    FOLLOWUP_LIMIT = test_config['limit']
+    MIN_DELAY = test_config['min_delay']
+    MAX_DELAY = test_config['max_delay']
+else:
+    files_config = config['files']
+    FOLLOWUP_LIMIT = email_config['followup_limit']
+    MIN_DELAY = email_config['followup_min_delay']
+    MAX_DELAY = email_config['followup_max_delay']
 
 # Create backup before starting
 if backup_manager.backup_config['backup_before_run']:
