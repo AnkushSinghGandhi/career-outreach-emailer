@@ -4,6 +4,7 @@ import time
 import os
 import random
 import yaml
+import argparse
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
@@ -14,9 +15,19 @@ from backup_manager import BackupManager
 from logger_config import EmailLogger
 from response_detector import ResponseDetector
 
+# Parse command line arguments
+parser = argparse.ArgumentParser(description='Enhanced Email Sender with Test Mode')
+parser.add_argument('--test-mode', action='store_true', help='Run in test mode (uses test_emails.csv)')
+parser.add_argument('--dry-run', action='store_true', help='Dry run - show what would be sent without sending')
+args = parser.parse_args()
+
 # Load configuration
 with open("config.yaml", 'r') as f:
     config = yaml.safe_load(f)
+
+# Apply test mode if enabled (CLI arg overrides config)
+TEST_MODE = args.test_mode or config['test_mode']['enabled']
+DRY_RUN = args.dry_run
 
 # Initialize logger
 logger = EmailLogger("send_email")
