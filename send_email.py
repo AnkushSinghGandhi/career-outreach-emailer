@@ -11,20 +11,17 @@ EMAIL = os.environ["EMAIL_ADDRESS"]
 PASSWORD = os.environ["EMAIL_PASSWORD"]
 
 # Load master email list
-
 emails_df = pd.read_csv("emails.csv")
 
 # Load sent log (or create if missing)
-
 if os.path.exists("sent_log.csv"):
-sent_df = pd.read_csv("sent_log.csv")
-sent_emails = set(sent_df["email"].tolist())
+    sent_df = pd.read_csv("sent_log.csv")
+    sent_emails = set(sent_df["email"].tolist())
 else:
-sent_emails = set()
-pd.DataFrame(columns=["email"]).to_csv("sent_log.csv", index=False)
+    sent_emails = set()
+    pd.DataFrame(columns=["email"]).to_csv("sent_log.csv", index=False)
 
 # Filter only new emails
-
 pending_df = emails_df[~emails_df["email"].isin(sent_emails)]
 
 LIMIT = 55       # emails/day
@@ -53,52 +50,49 @@ Ankush Singh Gandhi
 ATTACHMENT_PATH = "resume.pdf"
 
 def send_email(to_email, first_name):
-msg = MIMEMultipart()
-msg["From"] = EMAIL
-msg["To"] = to_email
-msg["Subject"] = SUBJECT
+    msg = MIMEMultipart()
+    msg["From"] = EMAIL
+    msg["To"] = to_email
+    msg["Subject"] = SUBJECT
 
-```
-msg.attach(MIMEText(BODY.format(first_name=first_name), "plain"))
+    msg.attach(MIMEText(BODY.format(first_name=first_name), "plain"))
 
-with open(ATTACHMENT_PATH, "rb") as f:
-    attach = MIMEApplication(f.read(), _subtype="pdf")
-    attach.add_header("Content-Disposition", "attachment", filename="Resume.pdf")
-    msg.attach(attach)
+    with open(ATTACHMENT_PATH, "rb") as f:
+        attach = MIMEApplication(f.read(), _subtype="pdf")
+        attach.add_header("Content-Disposition", "attachment", filename="Resume.pdf")
+        msg.attach(attach)
 
-server = smtplib.SMTP("smtp.gmail.com", 587)
-server.starttls()
-server.login(EMAIL, PASSWORD)
-server.sendmail(EMAIL, to_email, msg.as_string())
-server.quit()
-```
+    server = smtplib.SMTP("smtp.gmail.com", 587)
+    server.starttls()
+    server.login(EMAIL, PASSWORD)
+    server.sendmail(EMAIL, to_email, msg.as_string())
+    server.quit()
+
 
 count = 0
 
 for _, row in pending_df.iterrows():
-if count >= LIMIT:
-break
+    if count >= LIMIT:
+        break
 
-```
-to_email = row["email"]
-first_name = row.get("first_name", "")
+    to_email = row["email"]
+    first_name = row.get("first_name", "")
 
-try:
-    send_email(to_email, first_name)
-    print(f"Sent: {to_email}")
+    try:
+        send_email(to_email, first_name)
+        print(f"Sent: {to_email}")
 
-    # Log as sent
-    with open("sent_log.csv", "a") as log:
-        log.write(f"{to_email}\n")
+        # Log as sent
+        with open("sent_log.csv", "a") as log:
+            log.write(f"{to_email}\n")
 
-    count += 1
+        count += 1
 
-    # Random delay between MIN_DELAY and MAX_DELAY seconds
-    delay = random.randint(MIN_DELAY, MAX_DELAY)
-    print(f"Sleeping for {delay} seconds...")
-    time.sleep(delay)
+        # Random delay between MIN_DELAY and MAX_DELAY seconds
+        delay = random.randint(MIN_DELAY, MAX_DELAY)
+        print(f"Sleeping for {delay} seconds...")
+        time.sleep(delay)
 
-except Exception as e:
-    print(f"Failed: {to_email} - {e}")
-    time.sleep(5)
-```
+    except Exception as e:
+        print(f"Failed: {to_email} - {e}")
+        time.sleep(5)
