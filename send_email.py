@@ -24,7 +24,7 @@ else:
 # Filter only new emails
 pending_df = emails_df[~emails_df["email"].isin(sent_emails)]
 
-LIMIT = 55       # emails/day
+LIMIT = 125       # emails/day
 MIN_DELAY = 30   # minimum seconds between emails
 MAX_DELAY = 45   # maximum seconds between emails
 
