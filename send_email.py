@@ -31,14 +31,16 @@ MAX_DELAY = 45   # maximum seconds between emails
 SUBJECT = "Application for Python/Backend Developer Position"
 
 BODY = """
-Hi {first_name},
-I noticed that you are currently hiring for Python roles, and I wanted to reach out directly. With 2+ years of experience as Python Backend Developer, I am confident in my ability to contribute effectively to your team and believe my skills in building scalable systems using Flask, Django, REST APIs, and SQL/NoSQL databases (MySQL, MongoDB, Redis) align well with the requirements of the role.
+Hi {first_name}
 
-What excites me most is the chance to bring this mix of backend expertise, cloud deployment, and real-time data experience to opportunities your team is hiring for. I’d love to connect and share my resume for your consideration.
+I hope you're doing well.
 
-Thank you for considering my application. I have attached my resume for your review. I would welcome the opportunity to discuss how my background, skills, and passion for building scalable backend systems make me a strong candidate for this position.
+I’m reaching out to express my interest in exploring any current or upcoming opportunities for Python Backend roles within your organization or network. I have 2+ years of experience working with Flask, Django, REST APIs, and databases such as MySQL, MongoDB, and Redis, along with hands-on experience in building scalable backend systems and deploying cloud-based applications.
 
-I look forward to hearing from you soon.
+I understand you may not be actively hiring at the moment, but I would appreciate the chance to connect and share my resume for future consideration. I’m confident that my background in backend development, system design, and performance optimization aligns well with the needs of high-growth engineering teams.
+
+Thank you for your time, and please let me know if I can provide any additional information.
+I look forward to staying connected.
 
 Best regards,
 Ankush Singh Gandhi
