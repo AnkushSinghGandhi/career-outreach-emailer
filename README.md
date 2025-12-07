@@ -10,7 +10,7 @@
 
 ## ✨ Features
 
-- 📬 **Automated Daily Emails** - Send up to 125 emails per day automatically
+- 📬 **Automated Daily Emails** - Send up to 80 emails per day automatically
 - 🔄 **Smart Follow-ups** - Automatic follow-up emails to non-responders
 - 🎲 **Randomized Content** - Multiple subject lines, opening lines, and signatures to avoid spam filters
 - 📊 **Progress Tracking** - CSV-based tracking of sent emails and follow-ups
@@ -388,9 +388,9 @@ Before waiting for the scheduled run, test manually:
 Edit these variables in `send_email.py`:
 
 ```python
-LIMIT = 125              # Maximum emails per day (Line 24)
-MIN_DELAY = 50           # Minimum delay in seconds (Line 25)
-MAX_DELAY = 120          # Maximum delay in seconds (Line 26)
+LIMIT = 80              # Maximum emails per day (Line 24)
+MIN_DELAY = 120          # Minimum delay in seconds (Line 25)
+MAX_DELAY = 900         # Maximum delay in seconds (Line 26)
 ```
 
 **Recommendations:**
