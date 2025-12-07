@@ -14,7 +14,7 @@
 - 🔄 **Smart Follow-ups** - Automatic follow-up emails to non-responders
 - 🎲 **Randomized Content** - Multiple subject lines, opening lines, and signatures to avoid spam filters
 - 📊 **Progress Tracking** - CSV-based tracking of sent emails and follow-ups
-- ⏰ **Rate Limiting** - Intelligent delays between emails (50-120 seconds)
+- ⏰ **Rate Limiting** - Intelligent delays between emails (120-900 seconds)
 - 🎯 **Personalization** - Uses first names for personalized greetings
 - 📎 **Attachment Support** - Automatically attaches your resume/document
 - 🔒 **Secure** - Uses GitHub Secrets for credential management
