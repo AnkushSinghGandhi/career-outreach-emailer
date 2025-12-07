@@ -14,7 +14,7 @@ df = pd.read_csv("emails.csv")
 SUBJECT = "Application for Python/Backend Developer Position"
 
 BODY = """
-Hi {first_name},
+Hi {name},
 I noticed that you are currently hiring for Python roles, and I wanted to reach out directly. With 2+ years of experience as  Python Backend Developer, I am confident in my ability to contribute effectively to your team and believe my skills in building scalable systems using Flask, Django, REST APIs, and SQL/NoSQL databases (MySQL, MongoDB, Redis) align well with the requirements of the role.
 
 What excites me most is the chance to bring this mix of backend expertise, cloud deployment, and real-time data experience to opportunities your team is hiring for. I’d love to connect and share my resume for your consideration.
