@@ -1,0 +1,59 @@
+# Email Automation Configuration File
+# All settings for your email campaign
+
+email:
+  # Daily sending limits
+  limit: 125                    # Max emails per run for initial campaign
+  followup_limit: 40            # Max follow-up emails per run
+  
+  # Delay settings (in seconds)
+  min_delay: 50                 # Minimum delay between emails
+  max_delay: 120                # Maximum delay between emails
+  followup_min_delay: 40        # Minimum delay for follow-ups
+  followup_max_delay: 60        # Maximum delay for follow-ups
+  
+  # SMTP settings
+  smtp_server: smtp.gmail.com
+  smtp_port: 587
+
+files:
+  # CSV file paths
+  contacts: emails.csv
+  sent_log: sent_log.csv
+  followup_sent: followup_sent.csv
+  replied: replied.csv
+  resume: resume.pdf
+
+retry:
+  # Retry mechanism settings
+  enabled: true
+  max_attempts: 3               # Maximum retry attempts per email
+  initial_delay: 5              # Initial retry delay in seconds
+  backoff_multiplier: 2         # Exponential backoff multiplier
+
+logging:
+  # Logging configuration
+  enabled: true
+  log_dir: logs
+  log_level: INFO               # DEBUG, INFO, WARNING, ERROR
+  console_output: true          # Show logs in terminal
+  file_output: true             # Save logs to file
+
+backup:
+  # Automatic backup settings
+  enabled: true
+  backup_dir: backups
+  keep_last: 10                 # Number of backups to keep
+  backup_before_run: true       # Backup CSVs before each run
+
+response_detection:
+  # Auto-detect responses from Gmail
+  enabled: false                # Set to true to enable (requires IMAP access)
+  check_days: 7                 # Check emails from last N days
+  auto_update_replied: true     # Automatically update replied.csv
+
+progress:
+  # Progress bar settings
+  enabled: true
+  show_eta: true                # Show estimated time remaining
+  color: green                  # Progress bar color
