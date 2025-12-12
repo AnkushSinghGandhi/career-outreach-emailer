@@ -21,7 +21,7 @@ else:
 
 pending_df = emails_df[~emails_df["email"].isin(sent_emails)]
 
-LIMIT = 80
+LIMIT = 100
 MIN_DELAY = 60
 MAX_DELAY = 250
 
