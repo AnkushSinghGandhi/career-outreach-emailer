@@ -5,8 +5,8 @@ import os
 from datetime import datetime, timedelta
 
 IMAP_HOST = "imap.gmail.com"
-EMAIL_USER = os.getenv("EMAIL_USER")
-EMAIL_PASS = os.getenv("EMAIL_PASS")
+EMAIL_USER = os.environ["EMAIL_ADDRESS"]
+EMAIL_PASS = os.environ["EMAIL_PASSWORD"]
 
 DAYS_BACK = 10
 
