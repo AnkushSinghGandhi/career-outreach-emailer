@@ -87,22 +87,16 @@ def is_bounce(msg):
     )
 
 
-def main():
-    since_date = (datetime.utcnow() - timedelta(days=DAYS_BACK)).strftime("%d-%b-%Y")
-    print(f"🔍 Checking bounces since {since_date}")
-
-    sent_emails = load_sent_emails()
-    existing_bounces = load_existing_bounces()
-
-    mail = imaplib.IMAP4_SSL(IMAP_HOST)
-    mail.login(EMAIL_USER, EMAIL_PASS)
-
-    # IMPORTANT: Scan ALL MAIL (Inbox + Spam)
-    mail.select('"[Gmail]/All Mail"')
-
+def process_folder(mail, folder_name, since_date, sent_emails, existing_bounces):
+    print(f"📂 Scanning folder: {folder_name}")
+    mail.select(f'"{folder_name}"')
+    
     status, messages = mail.search(None, f'(SINCE "{since_date}")')
-
     new_bounces = 0
+
+    if status != "OK":
+        print(f"⚠️ Could not search folder {folder_name}")
+        return 0
 
     for num in messages[0].split():
         _, data = mail.fetch(num, "(RFC822)")
@@ -114,25 +108,41 @@ def main():
         body = msg.as_string()
         failed_email = extract_failed_email(body)
 
-        if not failed_email:
+        if not failed_email or failed_email not in sent_emails or failed_email in existing_bounces:
             continue
-
-        if failed_email not in sent_emails:
-            continue  # Ignore emails you never sent
-
-        if failed_email in existing_bounces:
-            continue  # Already recorded
 
         bounce_type = detect_bounce_type(body)
         append_bounce(failed_email, bounce_type)
-
         existing_bounces.add(failed_email)
         new_bounces += 1
-
         print(f"❌ {bounce_type.upper()} bounce detected: {failed_email}")
 
-    if new_bounces == 0:
-        print("✅ No new bounces found")
+    return new_bounces
+
+
+def main():
+    since_date = (datetime.utcnow() - timedelta(days=DAYS_BACK)).strftime("%d-%b-%Y")
+    print(f"🔍 Checking bounces since {since_date}")
+
+    sent_emails = load_sent_emails()
+    existing_bounces = load_existing_bounces()
+
+    mail = imaplib.IMAP4_SSL(IMAP_HOST)
+    mail.login(EMAIL_USER, EMAIL_PASS)
+
+    folders_to_scan = ['[Gmail]/All Mail', '[Gmail]/Spam']
+    total_new_bounces = 0
+
+    for folder in folders_to_scan:
+        try:
+            total_new_bounces += process_folder(mail, folder, since_date, sent_emails, existing_bounces)
+        except Exception as e:
+            print(f"⚠️ Error scanning {folder}: {e}")
+
+    if total_new_bounces == 0:
+        print("✅ No new bounces found in scanned folders")
+    else:
+        print(f"✅ Finished! Total new bounces detected: {total_new_bounces}")
 
     mail.logout()
 
