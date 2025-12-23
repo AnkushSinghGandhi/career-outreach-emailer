@@ -1,5 +1,12 @@
 import os
 
+# --- Automation & Depth Settings ---
+RUN_OUTREACH_AUTO = True
+RUN_FOLLOWUP_AUTO = False
+RUN_BOUNCE_CHECK_AUTO = False
+RUN_REPLY_CHECK_AUTO = False
+CHECK_DAYS_BACK = 20
+
 # --- General Configuration ---
 EMAIL_ADDRESS = os.environ.get("EMAIL_ADDRESS")
 EMAIL_PASSWORD = os.environ.get("EMAIL_PASSWORD")

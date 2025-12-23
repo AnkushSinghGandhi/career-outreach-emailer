@@ -1,33 +1,18 @@
-import smtplib
 import pandas as pd
 import time
 import os
 import random
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
-
+import argparse
 import email_config
+import mailer
 
-EMAIL = email_config.EMAIL_ADDRESS
-PASSWORD = email_config.EMAIL_PASSWORD
+# Setup logging
+logger = mailer.logger
 
-emails_df = pd.read_csv("emails.csv")
-sent_df = pd.read_csv("sent_log.csv")
-replied_df = pd.read_csv("replied.csv") if os.path.exists("replied.csv") else pd.DataFrame(columns=["email"])
-followup_df = pd.read_csv("followup_sent.csv") if os.path.exists("followup_sent.csv") else pd.DataFrame(columns=["email"])
-
-sent_emails = set(sent_df["email"].tolist())
-replied_emails = set(replied_df["email"].tolist())
-followed_emails = set(followup_df["email"].tolist())
-
-pending_followup = [email for email in sent_emails if email not in replied_emails and email not in followed_emails]
-
-print(f"Follow-up emails to send today: {len(pending_followup)}")
-
-FOLLOWUP_LIMIT = email_config.FOLLOWUP_LIMIT
-MIN_DELAY = email_config.FOLLOWUP_MIN_DELAY
-MAX_DELAY = email_config.FOLLOWUP_MAX_DELAY
-
+def parse_args():
+    parser = argparse.ArgumentParser(description="Send follow-up emails.")
+    parser.add_argument("--dry-run", action="store_true", help="Print emails instead of sending them.")
+    return parser.parse_args()
 
 def build_email(first_name):
     subject = random.choice(email_config.FOLLOWUP_SUBJECTS)
@@ -43,45 +28,59 @@ def build_email(first_name):
     )
     return subject, final_body
 
+def main():
+    args = parse_args()
+    
+    if not mailer.should_run(email_config.RUN_FOLLOWUP_AUTO):
+        return
 
-def send_email(to_email, first_name):
-    subject, full_body = build_email(first_name)
+    if args.dry_run:
+        logger.info("Running in DRY-RUN mode. No follow-ups will be sent.")
 
-    msg = MIMEMultipart()
-    msg["From"] = EMAIL
-    msg["To"] = to_email
-    msg["Subject"] = subject
-    msg.attach(MIMEText(full_body, "plain"))
+    emails_df = pd.read_csv("emails.csv")
+    sent_df = pd.read_csv("sent_log.csv")
+    
+    replied_df = pd.read_csv("replied.csv") if os.path.exists("replied.csv") else pd.DataFrame(columns=["email"])
+    followup_df = pd.read_csv("followup_sent.csv") if os.path.exists("followup_sent.csv") else pd.DataFrame(columns=["email"])
 
-    server = smtplib.SMTP("smtp.gmail.com", 587)
-    server.starttls()
-    server.login(EMAIL, PASSWORD)
-    server.sendmail(EMAIL, to_email, msg.as_string())
-    server.quit()
+    sent_emails = set(sent_df["email"].tolist())
+    replied_emails = set(replied_df["email"].tolist())
+    followed_emails = set(followup_df["email"].tolist())
 
+    pending_followup = [email for email in sent_emails if email not in replied_emails and email not in followed_emails]
 
-count = 0
+    logger.info(f"Follow-up emails to send today: {len(pending_followup)}")
 
-for email in pending_followup:
-    if count >= FOLLOWUP_LIMIT:
-        print("Follow-up limit reached.")
-        break
+    limit = email_config.FOLLOWUP_LIMIT
+    count = 0
 
-    row = emails_df[emails_df["email"] == email]
-    first_name = row["first_name"].iloc[0] if "first_name" in row and len(row) > 0 else ""
+    for email in pending_followup:
+        if count >= limit:
+            logger.info("Follow-up limit reached.")
+            break
 
-    try:
-        send_email(email, first_name)
-        print(f"Follow-up sent: {email}")
+        row = emails_df[emails_df["email"] == email]
+        first_name = row["first_name"].iloc[0] if "first_name" in row and len(row) > 0 else ""
 
-        pd.DataFrame([[email]], columns=["email"]).to_csv("followup_sent.csv", mode="a", header=False, index=False)
+        subject, full_body = build_email(first_name)
 
-        count += 1
+        success = mailer.send_smtp_email(
+            to_email=email,
+            subject=subject,
+            body=full_body,
+            dry_run=args.dry_run
+        )
 
-        delay = random.randint(MIN_DELAY, MAX_DELAY)
-        print(f"Sleeping for {delay} seconds...")
-        time.sleep(delay)
+        if success:
+            if not args.dry_run:
+                pd.DataFrame([[email]], columns=["email"]).to_csv("followup_sent.csv", mode="a", header=False, index=False)
+            
+            count += 1
+            delay = random.randint(email_config.FOLLOWUP_MIN_DELAY, email_config.FOLLOWUP_MAX_DELAY)
+            logger.info(f"Sleeping for {delay} seconds...")
+            time.sleep(delay)
+        else:
+            time.sleep(5)
 
-    except Exception as e:
-        print(f"Failed to send follow-up to {email}: {e}")
-        time.sleep(5)
+if __name__ == "__main__":
+    main()

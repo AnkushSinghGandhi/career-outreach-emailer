@@ -28,6 +28,7 @@ jobs:
       env:
         EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
         EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+        GITHUB_EVENT_NAME: ${{ github.event_name }}
       run: python send_email.py
 
     - name: Commit updated sent_log.csv

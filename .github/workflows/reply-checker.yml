@@ -1,15 +1,15 @@
-name: Email Bounce Checker
+name: Email Reply Checker
 
 on:
   schedule:
-    - cron: "0 3 * * *"  # Every day at 3:00 AM UTC
+    - cron: "30 2 * * *"  # Every day at 2:30 AM UTC
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  bounce-check:
+  reply-check:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,18 +21,21 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run bounce checker
+      - name: Install dependencies
+        run: pip install pandas
+
+      - name: Run reply checker
         env:
           EMAIL_ADDRESS: ${{ secrets.EMAIL_ADDRESS }}
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: |
-          python bounce_checker.py
+          python reply_checker.py
 
-      - name: Commit updated bounced_emails.csv
+      - name: Commit updated replied.csv
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
-          git add bounced_emails.csv
-          git commit -m "Update bounced emails list" || echo "No changes"
+          git add replied.csv
+          git commit -m "Update replied list" || echo "No changes"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
