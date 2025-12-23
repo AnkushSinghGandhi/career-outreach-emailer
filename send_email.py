@@ -7,8 +7,10 @@ from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from email.mime.application import MIMEApplication
 
-EMAIL = os.environ["EMAIL_ADDRESS"]
-PASSWORD = os.environ["EMAIL_PASSWORD"]
+import email_config
+
+EMAIL = email_config.EMAIL_ADDRESS
+PASSWORD = email_config.EMAIL_PASSWORD
 
 emails_df = pd.read_csv("emails.csv")
 
@@ -21,70 +23,21 @@ else:
 
 pending_df = emails_df[~emails_df["email"].isin(sent_emails)]
 
-LIMIT = 100
-MIN_DELAY = 60
-MAX_DELAY = 250
-
-SUBJECTS = [
-    "Application for Python/Backend Developer Role",
-    "Exploring Python Backend Opportunities",
-    "Regarding Python Backend Position",
-    "Interest in Python Developer Openings",
-    "Application: Python Backend Engineer",
-    "Inquiry About Python Developer Roles",
-    "Potential Fit for Python Backend Position",
-    "Profile for Python/Backend Developer"
-]
-
-OPENINGS = [
-    "I hope you're doing well.",
-    "Hope you're having a great day.",
-    "Hope you're doing great.",
-    "I hope everything is going well on your end.",
-    "Hope you're staying productive and healthy.",
-    "Trust you're doing well.",
-    "Hope this message finds you well.",
-    "I appreciate you taking a moment to read this.",
-    "Thank you for your time.",
-    "Hope you're having a productive week."
-]
-
-SIGNATURES = [
-    "Best regards,\nAnkush Singh Gandhi\n+91-95296-39652",
-    "Warm regards,\nAnkush Singh Gandhi\n+91-95296-39652",
-    "Sincerely,\nAnkush Singh Gandhi\n+91-95296-39652",
-    "Thank you,\nAnkush Singh Gandhi\n+91-95296-39652",
-    "Best,\nAnkush\n+91-95296-39652",
-    "Regards,\nAnkush\n+91-95296-39652",
-]
-
-LINKS = "\nhttps://warriorwhocodes.com\nhttps://www.linkedin.com/in/ankushsinghgandhi"
-
-ATTACHMENT_PATH = "resume.pdf"
+LIMIT = email_config.INITIAL_LIMIT
+MIN_DELAY = email_config.INITIAL_MIN_DELAY
+MAX_DELAY = email_config.INITIAL_MAX_DELAY
 
 
 def generate_email_body(first_name):
-    opening = random.choice(OPENINGS)
-    signature = random.choice(SIGNATURES)
+    opening = random.choice(email_config.INITIAL_OPENINGS)
+    signature = random.choice(email_config.INITIAL_SIGNATURES)
 
-    body = f"""
-Hi {first_name},
-
-{opening}
-
-I’m reaching out to explore opportunities for Python Backend roles within your organization or network. 
-I have 2+ years of experience working with Flask, Django, REST APIs, MySQL, MongoDB, Redis, and cloud deployments — 
-with strong focus on scalable backend systems and performance optimization.
-
-I understand you may not be hiring immediately, but I would appreciate the opportunity to connect or 
-be considered for future openings. I genuinely believe my backend engineering experience can be a strong fit 
-for fast-growing teams.
-
-Thank you for your time. Happy to provide any additional information.
-
-{signature}
-{LINKS}
-"""
+    body = email_config.INITIAL_BODY_TEMPLATE.format(
+        first_name=first_name,
+        opening=opening,
+        signature=signature,
+        links=email_config.LINKS
+    )
     return body
 
 
@@ -92,12 +45,12 @@ def send_email(to_email, first_name):
     msg = MIMEMultipart()
     msg["From"] = EMAIL
     msg["To"] = to_email
-    msg["Subject"] = random.choice(SUBJECTS)
+    msg["Subject"] = random.choice(email_config.INITIAL_SUBJECTS)
 
     body_text = generate_email_body(first_name)
     msg.attach(MIMEText(body_text, "plain"))
 
-    with open(ATTACHMENT_PATH, "rb") as f:
+    with open(email_config.ATTACHMENT_PATH, "rb") as f:
         attach = MIMEApplication(f.read(), _subtype="pdf")
         attach.add_header("Content-Disposition", "attachment", filename="Resume.pdf")
         msg.attach(attach)

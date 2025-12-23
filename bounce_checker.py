@@ -5,10 +5,12 @@ import re
 import csv
 from datetime import datetime, timedelta
 
+import email_config
+
 # ---------------- CONFIG ----------------
 IMAP_HOST = "imap.gmail.com"
-EMAIL_USER = os.environ["EMAIL_ADDRESS"]
-EMAIL_PASS = os.environ["EMAIL_PASSWORD"]
+EMAIL_USER = email_config.EMAIL_ADDRESS
+EMAIL_PASS = email_config.EMAIL_PASSWORD
 
 SENT_LOG_CSV = "sent_log.csv"
 BOUNCED_CSV = "bounced_emails.csv"
